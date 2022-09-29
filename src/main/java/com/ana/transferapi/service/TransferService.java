@@ -65,16 +65,18 @@ public class TransferService {
                   if (isValid(clientAccount, transferRequest)) {
                     transferBalances(clientAccount, transferRequest);
                   }
-                  return clientAccount.getBalance();
+                  return log.traceExit("transfer(transferRequest): {}", clientAccount.getBalance());
                 })
             .orElseThrow(
                 () -> {
                   log.error(
                       "Could not find the origin account: {}", transferRequest.getOriginAccount());
-                  return new NotFoundException(
-                      NotFoundErrorCodes.ORIGIN_ACCOUNT_NOT_FOUND,
-                      String.format(
-                          "Not found account number: %s", transferRequest.getOriginAccount()));
+                  return log.traceExit(
+                      "transfer(transferRequest): {}",
+                      new NotFoundException(
+                          NotFoundErrorCodes.ORIGIN_ACCOUNT_NOT_FOUND,
+                          String.format(
+                              "Not found account number: %s", transferRequest.getOriginAccount())));
                 }));
   }
 
@@ -129,26 +131,28 @@ public class TransferService {
    * @return true if is valid.
    */
   private boolean isValid(ClientAccountEntity clientAccount, TransferRequest transferRequest) {
-  	log.traceEntry(
-        "isValid(clientAccount={}, transferRequest={})", clientAccount, transferRequest);
+    log.traceEntry("isValid(clientAccount={}, transferRequest={})", clientAccount, transferRequest);
 
     if (transferRequest.getAmount().compareTo(BigDecimal.valueOf(1000)) > 0) {
       saveHistoric(clientAccount, transferRequest, TransferStatusEnum.FAILED);
-      throw new BadRequestException(
-          BadRequestErrorsTypes.TRANSFER_AMOUNT_LIMIT_ACHIEVED,
-          "the transfer amount must be a maximum of R$ 1000.00");
+      throw log.traceExit(
+          "isValid(clientAccount, transferRequest): {}",
+          new BadRequestException(
+              BadRequestErrorsTypes.TRANSFER_AMOUNT_LIMIT_ACHIEVED,
+              "the transfer amount must be a maximum of R$ 1000.00"));
     }
 
     if (transferRequest.getAmount().compareTo(clientAccount.getBalance()) > 0) {
       saveHistoric(clientAccount, transferRequest, TransferStatusEnum.FAILED);
-      throw new ConflictException(
-          ConflictErrorsTypes.INSUFFICIENT_ACCOUNT_BALANCE,
-          String.format(
-              "the account %s has not enough balance for the operation",
-              transferRequest.getOriginAccount()));
+      throw log.traceExit(
+          "isValid(clientAccount, transferRequest): {}",
+          new ConflictException(
+              ConflictErrorsTypes.INSUFFICIENT_ACCOUNT_BALANCE,
+              String.format(
+                  "the account %s has not enough balance for the operation",
+                  transferRequest.getOriginAccount())));
     }
-    return log.traceExit(
-        "isValid(clientAccount transferRequest): {}", true);
+    return log.traceExit("isValid(clientAccount, transferRequest): {}", true);
   }
 
   /**

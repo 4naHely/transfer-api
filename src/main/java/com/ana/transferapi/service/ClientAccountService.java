@@ -69,9 +69,11 @@ public class ClientAccountService {
             .orElseThrow(
                 () -> {
                   log.error("Could not find the account: {}", accountNumber);
-                  return new NotFoundException(
-                      NotFoundErrorCodes.ACCOUNT_NOT_FOUND,
-                      String.format("Not found account number: %s", accountNumber));
+                  return log.traceExit(
+                      "getClientByAccountNumber(accountNumber): {}",
+                      new NotFoundException(
+                          NotFoundErrorCodes.ACCOUNT_NOT_FOUND,
+                          String.format("Not found account number: %s", accountNumber)));
                 }));
   }
 }
