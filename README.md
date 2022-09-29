@@ -4,10 +4,12 @@
 </h4>
 
 <p align="center">
- <a href="#-about">About</a> •
- <a href="#-how-it-works">How it works</a> • 
- <a href="#-tech-stack">Tech Stack</a> • 
- <a href="#-author">Author</a>
+ <a href="#about">About</a> •
+ <a href="#how-it-works">How it works</a> • 
+ <a href="#tech-stack">Tech Stack</a> • 
+ <a href="#improves">Improves</a> • 
+ <a href="#author">Author</a>
+
 </p>
 
 ---

@@ -16,9 +16,4 @@ import org.springframework.stereotype.Repository;
 public interface ClientAccountRepository extends JpaRepository<ClientAccountEntity, String> {
 
   Optional<ClientAccountEntity> findByAccountNumber(Integer accountNumber);
-
-//  @Lock(LockModeType.PESSIMISTIC_WRITE)
-//  @Query("SELECT a FROM ClientAccountEntity a WHERE a.accountNumber = :accountNumber")
-//  @Transactional
-  //Optional<ClientAccountEntity> findByAccountNumberWithPessimisticLock(Integer accountNumber);
 }

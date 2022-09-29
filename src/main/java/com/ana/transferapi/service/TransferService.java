@@ -29,14 +29,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransferService {
 
-  /*TODO:
-     Add logs and javadoc [OK]
-     Concurrency handler [OK]
-     Unit and integrate tests [IN PROGRESS]
-     Create readme [OK]
-     Docker container
-     Apply some design pattern for the transfer business logic
-  */
   private final TransfersRepository transferRepository;
   private final ClientAccountRepository clientAccountRepository;
 
@@ -67,7 +59,6 @@ public class TransferService {
     return log.traceExit(
         "transfer(transferRequest): {}",
         clientAccountRepository
-            // .findByAccountNumberWithPessimisticLock(transferRequest.getOriginAccount())
             .findByAccountNumber(transferRequest.getOriginAccount())
             .map(
                 clientAccount -> {
@@ -102,7 +93,6 @@ public class TransferService {
     log.info("Calling clientAccountRepository to get destination account");
     ClientAccountEntity destinationAccount =
         clientAccountRepository
-            // .findByAccountNumberWithPessimisticLock(transferRequest.getDestinationAccount())
             .findByAccountNumber(transferRequest.getDestinationAccount())
             .orElseThrow(
                 () -> {
@@ -139,6 +129,9 @@ public class TransferService {
    * @return true if is valid.
    */
   private boolean isValid(ClientAccountEntity clientAccount, TransferRequest transferRequest) {
+  	log.traceEntry(
+        "isValid(clientAccount={}, transferRequest={})", clientAccount, transferRequest);
+
     if (transferRequest.getAmount().compareTo(BigDecimal.valueOf(1000)) > 0) {
       saveHistoric(clientAccount, transferRequest, TransferStatusEnum.FAILED);
       throw new BadRequestException(
@@ -154,7 +147,8 @@ public class TransferService {
               "the account %s has not enough balance for the operation",
               transferRequest.getOriginAccount()));
     }
-    return true;
+    return log.traceExit(
+        "isValid(clientAccount transferRequest): {}", true);
   }
 
   /**
